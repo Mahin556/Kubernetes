@@ -14,7 +14,7 @@ spec:
   initContainers:
   - name: write-ip
     image: busybox
-    command: ["sh", "-c", "sleep 3; echo Your ip is ${MY_POD_IP:-NotSet}; echo ${MY_POD_IP:-NotSet} > /web-content/ip.txt; echo 'Wrote the Pod IP to ip.txt'"]
+    command: ["sh", "-c", "sleep 3; echo Your ip is ${MY_POD_IP:-NotSet} | tee web-content/ip.txt; echo 'Wrote the Pod IP to ip.txt'"]
     env:
     - name: MY_POD_IP
       valueFrom:

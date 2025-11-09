@@ -1,0 +1,62 @@
+* Kubernetes uses QoS (Quality of Service) classes to prioritize Pods based on their resource requests and limits.
+
+* Preemption happens when the scheduler evicts lower-priority Pods to make room for higher-priority Pods when resources are scarce.
+
+* While Pod Priority is the main factor in preemption decisions, QoS also influences which Pods are chosen for eviction during resource pressure (like CPU or memory shortage).
+
+* QoS doesn’t change who gets preempted directly — that’s handled by Pod Priority. However, it affects who gets evicted when the node is under pressure (e.g., OOM, memory, disk issues).
+
+* If a high-priority Pod can’t be scheduled, Kubernetes may preempt lower-priority Pods, but among those of equal priority, QoS decides eviction order.
+
+* Example Scenario
+  * Imagine a node with:
+    * One Guaranteed Pod (uses 1 GB memory)
+    * One Burstable Pod (requests 512Mi, uses 700Mi)
+    * One BestEffort Pod (uses 256Mi)
+  * Now a high-priority Pod needs 512Mi to schedule:
+    * Scheduler looks for space → can’t find enough → decides to preempt.
+    * If all Pods have equal priority, the BestEffort Pod will be evicted first.
+    * If still insufficient, the Burstable Pod might be preempted next.
+    * The Guaranteed Pod will be last to be preempted or evicted.
+
+* Preemption is part of the scheduler’s decision to evict lower-priority Pods when higher-priority Pods can’t be scheduled.
+
+* PDB only applies to voluntary disruptions, but preemption is considered involuntary — so PDB does NOT prevent preemption.
+
+* However, PDB is still evaluated to avoid evicting too many Pods if the eviction is voluntary (like a node drain).
+
+---
+
+### **What is the Effect of PodDisruptionBudget (PDB) on Preemption?**
+
+* **PodDisruptionBudget (PDB)** defines how many Pods of a ReplicaSet or Deployment **must remain available** during disruptions.
+* The scheduler **respects PDBs** *whenever possible* during preemption.
+
+🧩 **Example PDB:**
+
+```yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: web-pdb
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: web
+```
+
+If a ReplicaSet has 3 Pods and `minAvailable: 2`, the scheduler will try to ensure at least **2 Pods stay running** during preemption.
+
+✅ **Normal Behavior:**
+
+* Scheduler avoids evicting Pods that would violate the PDB.
+* It looks for other Pods to preempt instead.
+
+⚠️ **Exception (Important):**
+If a **very high-priority Pod** needs to be scheduled and **no other option exists**,
+Kubernetes **will still preempt Pods even if it breaks the PDB rule**.
+
+This ensures that **critical workloads** (like control-plane components or payment systems) are always prioritized.
+
+---

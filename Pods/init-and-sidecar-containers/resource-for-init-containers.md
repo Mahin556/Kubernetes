@@ -1,3 +1,7 @@
+### References:
+- https://devopscube.com/kubernetes-init-containers/
+
+
 ### 🔹 CPU and Memory for Init Containers
 
 * **Why it matters:**
@@ -79,5 +83,3 @@ spec:
    * Adjust limits and requests based on observed resource consumption to optimize cluster utilization.
 
 
-### References:
-- https://devopscube.com/kubernetes-init-containers/

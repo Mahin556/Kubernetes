@@ -42,6 +42,9 @@ In Kubernetes, applications run inside **pods**, and these pods are **ephemeral*
 - Some pods need to be **accessible from outside the cluster** (external communication).  
 - Kubernetes doesn’t automatically handle this, so we need a way to ensure reliable **pod-to-pod and external access**.  
 
+### Challenge 3: Load Balancing
+### Challenge 4: Service Discovery
+
 
 
 ## The Solution: Kubernetes Services 
@@ -796,7 +799,7 @@ metadata:
 spec:
   ports:
   - port: 8080
-    targetPort: 31999
+    targetPort: 80
 ```
 
 And then define endpoints manually:
@@ -808,9 +811,10 @@ metadata:
   name: tutorial-point-service
 subsets:
   - addresses:
-      - ip: 192.168.168.40
+      - ip: 192.168.1.4
+      - ip: 192.168.0.4
     ports:
-      - port: 8080
+      - port: 80
 ```
 - Use Case: Exposing an external database or service not managed by Kubernetes.
 ---
@@ -837,7 +841,11 @@ spec:
 ```
 - Each port must have a name when using multiple ports.
 - Useful for applications exposing more than one protocol.
-
+```bash
+controlplane:~$ kubectl get svc
+NAME                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+tutorial-point-service   ClusterIP   10.103.25.44   <none>        80/TCP,443/TCP   3m47s
+```
 ---
 
 ### Task details

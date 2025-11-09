@@ -39,7 +39,14 @@ spec:
         k8s-app: kube-proxy
     spec:
       hostNetwork: true   # Pod shares host’s network namespace
+      serviceAccountName: kube-proxy
+      priorityClassName: system-node-critical
       dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 30
+      updateStrategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxUnavailable: 1
       tolerations:
       - operator: Exists   # Run on all nodes, even tainted ones
       containers:
@@ -58,7 +65,9 @@ spec:
         hostPath:
           path: /lib/modules
 ```
-
+* The `hostNetwork: true` and `privileged: true` settings are required for kube-proxy, since it interacts with iptables and host networking.
+* The tolerations with operator: Exists ensures it runs on all nodes, including tainted control-plane nodes — good for cluster-wide networking.
+* The /lib/modules volume mount is correct for kernel module access.
 ---
 
 ### 🔹 Common SecurityContext Fields

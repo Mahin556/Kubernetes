@@ -11,6 +11,21 @@
 
 ### **How It Works**
 
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx    
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+```
+
 1. **Service YAML** (example):
 
    ```yaml

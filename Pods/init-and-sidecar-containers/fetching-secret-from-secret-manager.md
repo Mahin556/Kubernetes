@@ -1,21 +1,16 @@
-### 🔹 Problem
-
 * Your app needs a **secret key** (API key, DB password, token, etc.).
 * You cannot **hardcode it in the app image**.
 * You cannot use **Kubernetes Secrets directly** (maybe due to compliance/security policies).
 * Instead, you want to **fetch secrets at runtime** from a **secret manager** (e.g., HashiCorp Vault, AWS Secrets Manager, Azure Key Vault, GCP Secret Manager).
 
----
 
 ### 🔹 Solution: Use an Init Container
 
 * The init container:
-
   1. Connects to the secret manager (with credentials or IAM role).
   2. Fetches the secret.
   3. Writes it to a **shared volume** (e.g., `emptyDir`).
 * The main app container:
-
   * Reads the secret from that volume when it starts.
 
 ---
@@ -37,7 +32,7 @@
 
 ---
 
-![](https://github.com/Mahin556/K8S-artifects/blob/main/images/image-73-9.png)
+![](/images/image-73-9.png)
 
 ---
 

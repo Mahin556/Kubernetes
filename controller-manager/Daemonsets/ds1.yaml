@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: splunk-monitoring-agent
@@ -11,14 +11,15 @@ spec:
       labels:
         app: logging
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchFields:
+                  - key: metadata.name
+                    operator: In
+                    values:
+                      - target-host-name
       containers:
-      - name: splunk-monitoring-agent
-        image: splunk:latest
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchFields:
-            - key: metadata.name
-              operator: In
-              values:
-              - target-host-name
+        - name: splunk-monitoring-agent
+          image: splunk:latest

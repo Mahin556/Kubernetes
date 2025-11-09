@@ -4,7 +4,6 @@
 ### **a) Inside the Same Pod (Multi-container Pod)**
 
 * Containers in the **same Pod** share:
-
   * **Network namespace** → same IP address and port space.
   * **Volumes** → shared storage.
 * Communication is done via **`localhost`** (loopback).
